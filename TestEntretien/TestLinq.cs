@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace TestEntretien
 {
@@ -18,6 +17,15 @@ namespace TestEntretien
             {
                 {"a",10 },{"c",22},{"b",7896}
             };
+
+            var dico = a.ToDictionary(p => p.Key, p => p.Value + b[p.Key]);
+
+            foreach (var item in dico)
+            {
+                Console.WriteLine($"{item.Key} ==> {item.Value}");
+            }
+
+
         }
 
         /// <summary>
@@ -31,6 +39,15 @@ namespace TestEntretien
                 new List<int>() { 45, 2, 1, 4, 2, 2, 100 },
                 new List<int>() { 45, 2, 1, 4, 2, 2 }
             };
+
+            var list = datas.Select(p => p.Select((item, index)=> new 
+            {
+                item, 
+                index
+            })).SelectMany(a=>a).GroupBy(a=>a.index).Select(a=>a.Sum(a=>a.item));
+
+            
+
         }
 
         /// <summary>
