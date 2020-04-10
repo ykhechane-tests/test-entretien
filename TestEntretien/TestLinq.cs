@@ -40,13 +40,13 @@ namespace TestEntretien
                 new List<int>() { 45, 2, 1, 4, 2, 2 }
             };
 
-            var list = datas.Select(p => p.Select((item, index)=> new 
+            var list = datas.Select(p => p.Select((item, index) => new
             {
-                item, 
+                item,
                 index
-            })).SelectMany(a=>a).GroupBy(a=>a.index).Select(a=>a.Sum(a=>a.item));
+            })).SelectMany(a => a).GroupBy(a => a.index).Select(a => a.Sum(a => a.item));
 
-            
+
 
         }
 
@@ -57,14 +57,44 @@ namespace TestEntretien
         {
             List<int[]> intervals = new List<int[]>()
             {
+                //new int[]{ 1, 250 }, //added by yassine for test
                 new int[]{ 1, 3 },
                 new int[]{ 2, 6},
                 new int[]{ 8, 10 },
                 new int[]{ 15, 18 },
                 new int[]{ 16, 19 },
-                new int[]{ 17, 25 },
+                new int[]{ 17, 25 }
+
             };
-            List<int[]> result = new List<int[]>();
+
+            var result = intervals.OrderBy(a => a.Min()).ThenBy(a => a.Max()).Select(item =>
+            new
+            {
+                IntStart = item.Min(),
+                IntEnd = item.Max(),
+                HasOverlap = intervals.Any(a => HasOverlap(a, item))
+            })
+            .Where(i => !i.HasOverlap)
+            .Select(b => new
+            {
+                IntStart = b.IntStart,
+                IntEnd = intervals.Where(c => b.IntStart <= c.Min() && b.IntEnd >= c.Min()).Max(m => m.Max())
+            }).GroupBy(a => a.IntEnd, a => a.IntStart).Select(a => (new int[]
+             {
+                  a.Min(),
+                  a.Key
+             })).ToList();
+
+
+            foreach (var item in result)
+            {
+                Console.WriteLine($" {item.Min()}, {item.Max()}");
+            }
+        }
+
+        private static bool HasOverlap(int[] a, int[] b)
+        {
+            return a.Min() < b.Min() && a.Max() > b.Min();
         }
     }
 }

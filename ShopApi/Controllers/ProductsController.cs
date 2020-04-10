@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ShopApi.Models;
 using System;
@@ -29,7 +30,7 @@ namespace ShopApi.Controllers
 
             if (!products.Any())
             {
-                return NotFound();
+                return NoContent();
             }
             return Ok(products);
         }
@@ -38,7 +39,7 @@ namespace ShopApi.Controllers
         [Route("products/{id}")]
         public IActionResult GetProductById(int id)
         {
-            var product = _shopDBContext.Product.FirstOrDefault(p => p.Id == id);
+            var product = _shopDBContext.Product.Find(id);
 
             if (product == null)
             {
@@ -49,10 +50,10 @@ namespace ShopApi.Controllers
 
 
         [HttpPost]
-        [Route("products/{id}")]
+        [Route("products")]
         public IActionResult AddProduct([FromBody]Product product)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
@@ -74,10 +75,10 @@ namespace ShopApi.Controllers
         }
 
         [HttpPut]
-        [Route("products/{id}")]
+        [Route("products")]
         public IActionResult UpdateProduct([FromBody]Product product)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
@@ -127,7 +128,9 @@ namespace ShopApi.Controllers
         {
             try
             {
-                var orders = _shopDBContext.Customer.Select(c => new
+                var orders = _shopDBContext.Customer.
+                    Include(a=>a.Order).                    
+                    Select(c => new
                 {
                     c.Email,
                     Total = c.Order.SelectMany(a => a.OrderItem.Select(a => a.Product.Price)).Sum()

@@ -9,8 +9,11 @@ namespace TestEntretien
             Console.WriteLine("starting..");
 
             //TestAlgo.GroupAnagram();
+            //TestAlgo.SortInt();
+            TestLinq.MergeInterval();
+            //TestAlgo.PerfSeach();
             //TestLinq.IndexAddition();
-            TestLinq.IndexAddition();
+            //TestLinq.IndexAddition();
             //TestRefacto_3.Run();
 
             Console.WriteLine("complete");

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -15,44 +16,22 @@ namespace TestEntretien
         public static void GroupAnagram()
         {
             Console.WriteLine("GroupAnagram start");
+            
             string[] input = { "reza", "eat", "tea", "tan", "ate", "nat", "bat", "bta", "azer" };
 
-            var sortedImput = new List<string>();
+            var anagramGroups = input.GroupBy(a => string.Join(null,a.OrderBy(a => a))).Select(a=>a.ToList());
 
-            foreach (var item in input)
+            foreach (var anagramGroup in anagramGroups)
             {
-                var word = item.ToList();
-                word.Sort();
-                sortedImput.Add(string.Join("", word));
-            }
-
-            var indexes = new List<int>();
-
-            foreach (var item in sortedImput)
-            {
-                foreach (var item2 in sortedImput)
-                {                    
-                    if(item == item2)
-                    {
-                        indexes.Add(sortedImput.IndexOf(item2));
-                    }
-                }
-
-            }
-
-
+                Console.WriteLine($"{string.Join(", ",anagramGroup)}");
+            }          
         }
 
         public static void SortInt()
         {
             int[] numbers = Enumerable.Range(0, 10).OrderBy(xp => Guid.NewGuid()).ToArray();
 
-
-
-
-
-
-            Console.WriteLine(string.Join(",", numbers));
+            Console.WriteLine(string.Join(",", numbers.OrderBy(a=>a)));
 
         }
 
@@ -71,12 +50,14 @@ namespace TestEntretien
                 .Select(i => (i.ToString(), $"mail_{i}@citeo.com"));
 
             List<(string Id, string Email, string Name)> result = new List<(string Id, string Email, string Name)>();
+            
             Stopwatch watch = Stopwatch.StartNew();
 
-            // 
-            Console.WriteLine(watch.Elapsed.TotalSeconds);
+            var dico = persons2.ToDictionary(a=>a.Id, a=>a.Email); // search complexity O(1)
 
-
+            result.AddRange(persons.Select(i => (i.Id, i.Name, dico[i.Id])));            
+            
+            Console.WriteLine(watch.Elapsed.TotalMilliseconds);
         }
     }
 }
